@@ -19,6 +19,14 @@ export default function Cart() {
     if (quantity < 1) return
     dispatch(updateQuantity({ id, quantity }))
   }
+  const handleCheckout = () => {
+    const user = localStorage.getItem('user')
+    if (!user) {
+      navigate('/login', { state: { redirectTo: '/checkout' } })
+    } else {
+      navigate('/checkout')
+    }
+  }
 
   return (
     <div className={pageStyles.container}>
@@ -49,20 +57,20 @@ export default function Cart() {
                   )}
                 </div>
                 <div className={styles.itemActions}>
-                  <button 
+                  <button
                     onClick={() => changeQuantity(item.id, item.quantity - 1)}
                     className={styles.qtyBtn}
                   >
                     −
                   </button>
                   <span className={styles.qtyCount}>{item.quantity}</span>
-                  <button 
+                  <button
                     onClick={() => changeQuantity(item.id, item.quantity + 1)}
                     className={styles.qtyBtn}
                   >
                     +
                   </button>
-                  <button 
+                  <button
                     onClick={() => removeFromCart(item.id)}
                     className={styles.removeBtn}
                   >
@@ -78,9 +86,9 @@ export default function Cart() {
               <span>{t('cart.total')}</span>
               <span className={styles.summaryTotal}>{totalPrice} ₽</span>
             </div>
-            <button 
+            <button
               className={styles.checkoutBtn}
-              onClick={() => navigate('/checkout')}
+              onClick={handleCheckout}
             >
               {t('cart.checkout')}
             </button>

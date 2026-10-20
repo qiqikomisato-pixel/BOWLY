@@ -1,39 +1,42 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useDispatch } from 'react-redux'
+import { useLoginMutation } from '../../api/api'
+import { setUser } from '../../store/slices/authSlice'
 import pageStyles from '../../styles/page.module.css'
 import styles from './Auth.module.css'
 
 export default function Login() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const dispatch = useDispatch()
   const { t } = useTranslation()
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
-  const handleSubmit = (e) => {
+  const [login, { isLoading }] = useLoginMutation()
+
+  const from = location.state?.from?.pathname || '/'
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    
-    if (email && password) {
-      const isAdmin = email === 'admin@gmail.com' && password === 'admin123'
-      const name = isAdmin ? 'Администратор' : 'Пользователь'
-      
-      const user = { 
-        name, 
-        email, 
-        role: isAdmin ? 'admin' : 'user'
-      }
-      
-      localStorage.setItem('user', JSON.stringify(user))
-      
-      if (isAdmin) {
-        navigate('/admin')
-      } else {
-        navigate('/')
-      }
-    } else {
-      setError(t('auth.error'))
+
+    if (!email || !password) {
+      setError(t('errors.validation.required'))
+      return
+    }
+
+    try {
+      const result = await login({ email, password }).unwrap()
+      dispatch(setUser(result.user))
+      navigate(from, { replace: true })
+    } catch (err) {
+      const code = err?.data?.error_code || 'server.500'
+      setError(t(`errors.${code}`))
     }
   }
 
@@ -68,8 +71,12 @@ export default function Login() {
 
           {error && <p className={styles.error}>{error}</p>}
 
-          <button type="submit" className={styles.submitBtn}>
-            {t('auth.login')}
+          <button
+            type="submit"
+            className={styles.submitBtn}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Вход...' : t('auth.login')}
           </button>
 
           <p className={styles.switch}>

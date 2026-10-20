@@ -29,11 +29,7 @@ function App() {
               <MyBowl />
             </ProtectedRoute>
           } />
-          <Route path="/cart" element={
-            <ProtectedRoute>
-              <Cart />
-            </ProtectedRoute>
-          } />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/profile" element={
             <ProtectedRoute>
               <Profile />

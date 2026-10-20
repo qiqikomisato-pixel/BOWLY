@@ -42,7 +42,7 @@ export default function Sets() {
 
   const handleAddToCart = (product) => {
     dispatch(addItem({
-      id: Date.now() + product.id,
+      id: product.id,
       name: product.name,
       emoji: product.emoji,
       price: product.price,
