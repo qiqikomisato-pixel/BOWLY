@@ -1,0 +1,18 @@
+
+
+{
+  "validation": {
+    "required": "Please fill in all fields",
+    "invalid_email": "Invalid email"
+  },
+  "auth": {
+    "invalid_credentials": "Invalid email or password",
+    "passwordMismatch": "Passwords do not match",
+    "unauthorized": "Authentication required",
+    "email_taken": "User with this email already exists"
+  },
+  "server": {
+    "500": "Something went wrong. Please try again later",
+    "network": "No connection to server"
+  }
+}

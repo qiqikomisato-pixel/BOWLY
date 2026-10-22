@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { register, clearError } from '../../store/slices/authSlice'
 import pageStyles from '../../styles/page.module.css'
 import styles from './Auth.module.css'
+import { isValidEmail } from '../../utils/validators'
 
 export default function Register() {
   const navigate = useNavigate()
@@ -39,11 +40,19 @@ export default function Register() {
     setError('')
     dispatch(clearError())
 
+    // 1. Проверка на пустоту
     if (!name || !email || !password) {
       setError(t('errors.validation.required'))
       return
     }
 
+    // 2. Проверка формата email
+    if (!isValidEmail(email)) {
+      setError(t('errors.validation.invalid_email'))
+      return
+    }
+
+    // 3. Проверка паролей
     if (password !== confirmPassword) {
       setError(t('errors.auth.passwordMismatch'))
       return
@@ -63,7 +72,7 @@ export default function Register() {
         <h1 className={pageStyles.title}>{t('auth.register')}</h1>
         <p className={pageStyles.subtitle}>{t('auth.registerSubtitle')}</p>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <form onSubmit={handleSubmit} className={styles.form} autoComplete="off">
           <div className={styles.field}>
             <label>{t('auth.name')}</label>
             <input
@@ -71,7 +80,6 @@ export default function Register() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Иван Иванов"
-              required
             />
           </div>
 
@@ -82,7 +90,6 @@ export default function Register() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="example@mail.ru"
-              required
             />
           </div>
 
@@ -93,7 +100,6 @@ export default function Register() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              required
             />
           </div>
 
@@ -104,18 +110,13 @@ export default function Register() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="••••••••"
-              required
             />
           </div>
 
           {error && <p className={styles.error}>{error}</p>}
 
-          <button
-            type="submit"
-            className={styles.submitBtn}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Регистрация...' : t('auth.register')}
+          <button type="submit" className={styles.submitBtn} disabled={isLoading}>
+            {isLoading ? t('auth.registerLoading') : t('auth.register')}
           </button>
 
           <p className={styles.switch}>

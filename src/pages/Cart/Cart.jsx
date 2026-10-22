@@ -88,7 +88,7 @@ export default function Cart() {
             </div>
             <button
               className={styles.checkoutBtn}
-              onClick={handleCheckout}
+              onClick={() => navigate('/checkout')}
             >
               {t('cart.checkout')}
             </button>

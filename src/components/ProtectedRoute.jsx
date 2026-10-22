@@ -1,11 +1,13 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 export default function ProtectedRoute({ children }) {
-  const user = localStorage.getItem('user')
-  
-  if (!user) {
-    return <Navigate to="/login" replace />
+  const isAuth = useSelector(state => state.auth.isAuth)
+  const location = useLocation()
+
+  if (!isAuth) {
+    return <Navigate to="/login" replace state={{ from: location }} />
   }
-  
+
   return children
 }

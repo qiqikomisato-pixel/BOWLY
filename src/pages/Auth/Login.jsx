@@ -42,6 +42,11 @@ export default function Login() {
       return
     }
 
+    if (!isValidEmail(email)) {
+      setError(t('errors.validation.invalid_email'))
+      return
+    }
+
     try {
       await dispatch(login({ email, password })).unwrap()
       navigate(from, { replace: true })
@@ -56,7 +61,7 @@ export default function Login() {
         <h1 className={pageStyles.title}>{t('auth.login')}</h1>
         <p className={pageStyles.subtitle}>{t('auth.loginSubtitle')}</p>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <form onSubmit={handleSubmit} className={styles.form} autoComplete="off" >
           <div className={styles.field}>
             <label>{t('auth.email')}</label>
             <input

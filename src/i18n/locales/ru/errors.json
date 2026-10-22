@@ -1,0 +1,16 @@
+{
+  "validation": {
+    "required": "Заполните все поля",
+    "invalid_email": "Некорректный email"
+  },
+  "auth": {
+    "invalid_credentials": "Неверный email или пароль",
+    "passwordMismatch": "Пароли не совпадают",
+    "unauthorized": "Требуется авторизация",
+    "email_taken": "Пользователь с таким email уже существует"
+  },
+  "server": {
+    "500": "Что-то пошло не так. Попробуйте позже",
+    "network": "Нет соединения с сервером"
+  }
+}

@@ -138,8 +138,10 @@
     },
     "auth": {
         "login": "Вход",
+        "loginLoading": "Вход...",    
         "loginSubtitle": "Войдите в свой аккаунт",
         "register": "Регистрация",
+        "registerLoading": "Регистрация...", 
         "registerSubtitle": "Создайте аккаунт",
         "email": "Email",
         "password": "Пароль",
@@ -176,4 +178,5 @@
         "delivering": "В пути",
         "delivered": "Доставлен"
     }
+    
 }

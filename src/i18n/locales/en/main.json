@@ -138,8 +138,10 @@
     },
     "auth": {
         "login": "Login",
+        "loginLoading": "Logging in...",
         "loginSubtitle": "Sign in to your account",
         "register": "Register",
+        "registerLoading": "Signing up...",
         "registerSubtitle": "Create an account",
         "email": "Email",
         "password": "Password",
