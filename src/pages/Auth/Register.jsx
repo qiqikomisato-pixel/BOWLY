@@ -1,9 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useDispatch } from 'react-redux'
-import { useRegisterMutation } from '../../api/api'
-import { setUser } from '../../store/slices/authSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { register, clearError } from '../../store/slices/authSlice'
 import pageStyles from '../../styles/page.module.css'
 import styles from './Auth.module.css'
 
@@ -19,13 +18,26 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
 
-  const [register, { isLoading }] = useRegisterMutation()
+  const { isLoading, error: authError } = useSelector(state => state.auth)
 
   const from = location.state?.from?.pathname || '/'
+
+  useEffect(() => {
+    if (authError) {
+      setError(t(`errors.${authError}`))
+    }
+  }, [authError, t])
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearError())
+    }
+  }, [dispatch])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    dispatch(clearError())
 
     if (!name || !email || !password) {
       setError(t('errors.validation.required'))
@@ -38,12 +50,10 @@ export default function Register() {
     }
 
     try {
-      const result = await register({ name, email, password, confirmPassword }).unwrap()
-      dispatch(setUser(result.user))
+      await dispatch(register({ name, email, password, confirmPassword })).unwrap()
       navigate(from, { replace: true })
     } catch (err) {
-      const code = err?.data?.error_code || 'server.500'
-      setError(t(`errors.${code}`))
+      // ошибка уже в state.auth.error — компонент покажет
     }
   }
 

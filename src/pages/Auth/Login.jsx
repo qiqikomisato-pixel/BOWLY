@@ -1,9 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useDispatch } from 'react-redux'
-import { useLoginMutation } from '../../api/api'
-import { setUser } from '../../store/slices/authSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { login, clearError } from '../../store/slices/authSlice'
 import pageStyles from '../../styles/page.module.css'
 import styles from './Auth.module.css'
 
@@ -17,13 +16,26 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
-  const [login, { isLoading }] = useLoginMutation()
+  const { isLoading, error: authError } = useSelector(state => state.auth)
 
   const from = location.state?.from?.pathname || '/'
+
+  useEffect(() => {
+    if (authError) {
+      setError(t(`errors.${authError}`))
+    }
+  }, [authError, t])
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearError())
+    }
+  }, [dispatch])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    dispatch(clearError())
 
     if (!email || !password) {
       setError(t('errors.validation.required'))
@@ -31,12 +43,10 @@ export default function Login() {
     }
 
     try {
-      const result = await login({ email, password }).unwrap()
-      dispatch(setUser(result.user))
+      await dispatch(login({ email, password })).unwrap()
       navigate(from, { replace: true })
     } catch (err) {
-      const code = err?.data?.error_code || 'server.500'
-      setError(t(`errors.${code}`))
+      // ошибка уже в state.auth.error — компонент покажет
     }
   }
 

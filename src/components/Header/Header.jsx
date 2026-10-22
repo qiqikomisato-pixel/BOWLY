@@ -1,29 +1,28 @@
 import { useState, useRef, useEffect } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { logout } from '../../store/slices/authSlice'
 import styles from './Header.module.css'
 
 export default function Header() {
   const navigate = useNavigate()
   const location = useLocation()
   const { t, i18n } = useTranslation()
-  
+
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isDark, setIsDark] = useState(() => {
     return localStorage.getItem('theme') === 'dark'
   })
   const menuRef = useRef(null)
   const burgerRef = useRef(null)
-  
+
   const cartCount = useSelector(state => state.cart.totalCount)
-  const [isAuth, setIsAuth] = useState(() => {
-    return !!localStorage.getItem('user')
-  })
-  const [isAdmin, setIsAdmin] = useState(() => {
-    const user = JSON.parse(localStorage.getItem('user') || '{}')
-    return user.role === 'admin'
-  })
+
+  const dispatch = useDispatch()
+  const isAuth = useSelector(state => state.auth.isAuth)
+  const isAdmin = useSelector(state => state.auth.isAdmin)
+  const isOperator = useSelector(state => state.auth.isOperator)
 
   const closeMenu = () => {
     setIsMenuOpen(false)
@@ -47,9 +46,7 @@ export default function Header() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('user')
-    setIsAuth(false)
-    setIsAdmin(false)
+    dispatch(logout())
     navigate('/')
     closeMenu()
   }
@@ -60,15 +57,12 @@ export default function Header() {
       document.documentElement.setAttribute('data-theme', savedTheme)
       setIsDark(savedTheme === 'dark')
     }
-    setIsAuth(!!localStorage.getItem('user'))
-    const user = JSON.parse(localStorage.getItem('user') || '{}')
-    setIsAdmin(user.role === 'admin')
-  }, [location])
-
+  }, [])
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        menuRef.current && 
+        menuRef.current &&
         !menuRef.current.contains(event.target) &&
         burgerRef.current &&
         !burgerRef.current.contains(event.target)
@@ -90,7 +84,7 @@ export default function Header() {
     <header className={styles.header}>
       <div className={styles.headerInner}>
         <div className={styles.left}>
-          <button 
+          <button
             ref={burgerRef}
             className={styles.burger}
             onClick={toggleMenu}
@@ -143,15 +137,15 @@ export default function Header() {
         </nav>
 
         <div className={styles.right}>
-          <button 
+          <button
             onClick={toggleLanguage}
             className={styles.langBtn}
           >
             {i18n.language === 'ru' ? 'EN' : 'RU'}
           </button>
 
-          <button 
-            onClick={toggleTheme} 
+          <button
+            onClick={toggleTheme}
             className={styles.themeBtn}
             aria-label="Переключить тему"
           >
@@ -163,8 +157,8 @@ export default function Header() {
               {t('header.logout')}
             </button>
           ) : (
-            <button 
-              onClick={() => navigate('/login')} 
+            <button
+              onClick={() => navigate('/login')}
               className={styles.authBtn}
             >
               {t('header.login')}
